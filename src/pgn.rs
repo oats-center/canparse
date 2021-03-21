@@ -243,6 +243,10 @@ impl PgnDefinition {
             spns: spns,
         }
     }
+
+    pub fn get_spns<'a>(&'a self) -> &'a HashMap<String, SpnDefinition> {
+        &self.spns
+    }
 }
 // TODO: PgnDefinition Builder pattern
 
@@ -466,19 +470,19 @@ impl FromDbc for PgnDefinition {
 /// Suspect Parameter Number definition
 #[derive(Debug, PartialEq, Clone)]
 pub struct SpnDefinition {
-    name: String,
+    pub name: String,
     pub number: usize,
     id: u32,
-    description: String,
+    pub description: String,
     start_bit: usize,
     bit_len: usize,
     little_endian: bool,
     signed: bool,
     scale: f32,
     offset: f32,
-    min_value: f32,
-    max_value: f32,
-    units: String,
+    pub min_value: f32,
+    pub max_value: f32,
+    pub units: String,
 }
 
 /// Internal function for parsing CAN message arrays given the definition parameters.  This is where
@@ -523,7 +527,7 @@ fn parse_message(
 
     let bit_mask: u64 = 2u64.pow(bit_len as u32) - 1;
 
-    Some((((msg64 >> start_bit) & bit_mask) as f32) * scale + offset)
+    Some(((msg64 >> start_bit) & bit_mask) as f32 * scale as f32 + offset as f32)
 }
 
 /// The collection of functions for parsing CAN messages `N` into their defined signal values.
